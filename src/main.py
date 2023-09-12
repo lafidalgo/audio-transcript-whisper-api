@@ -29,7 +29,7 @@ async def submit(params: Params = Depends(), files: List[UploadFile] = File(...)
         img = Image.open(BytesIO(img_data))
 
         # Apply tesseract
-        results[file.filename] = "Test"
+        results[file.filename] = "Test API"
 
     return {"results": results,
             "params": params}
