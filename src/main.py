@@ -3,8 +3,11 @@ from pydantic import BaseModel
 from typing import List, Optional
 from PIL import Image
 from io import BytesIO
+import whisper
 
 app = FastAPI()
+
+model = whisper.load_model(name="small", download_root="/whisper-model")
 
 class Params(BaseModel):
     output_type: Optional[str] = "string"
@@ -28,8 +31,10 @@ async def submit(params: Params = Depends(), files: List[UploadFile] = File(...)
         # Convert the image bytes to a PIL Image
         img = Image.open(BytesIO(img_data))
 
-        # Apply tesseract
-        results[file.filename] = "Test API"
+        # Apply Whisper
+        result = model.transcribe("assets/audio/sample1.mp3")
+        transcription = result["text"]
+        results[file.filename] = transcription
 
     return {"results": results,
             "params": params}
