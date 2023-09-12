@@ -17,7 +17,7 @@ RUN pip install -r requirements.txt
 RUN pip install "git+https://github.com/openai/whisper.git"
 
 # Download whisper model
-RUN whisper "sample1.mp3" --model small --model_dir /whisper-model
+RUN whisper "assets/audio/sample1.mp3" --model small --model_dir /whisper-model
 
 # Expose port 8000 for FastAPI
 EXPOSE 8000
