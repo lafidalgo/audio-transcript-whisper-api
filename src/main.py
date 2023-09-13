@@ -4,6 +4,8 @@ from typing import List, Optional
 from PIL import Image
 from io import BytesIO
 import whisper
+import tempfile
+import os
 
 app = FastAPI()
 
@@ -26,13 +28,21 @@ async def submit(params: Params = Depends(), files: List[UploadFile] = File(...)
 
     for file in files:
         # Read the image file as bytes
-        img_data = await file.read()
+        audio_data = await file.read()
 
-        # Convert the image bytes to a PIL Image
-        img = Image.open(BytesIO(img_data))
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(dir='src', delete=False, suffix=".mp3") as temp_file:
+            temp_file_path = temp_file.name
+            # You can write data to the temporary file if needed
+            temp_file.write(audio_data)
+        
+        filename = os.path.basename(temp_file_path)
+        file_path = os.path.join('src', filename)
 
         # Apply Whisper
-        result = model.transcribe("assets/audio/sample1.mp3")
+        result = model.transcribe(file_path)
+        os.remove(temp_file_path)
+        # Get the transcription
         transcription = result["text"]
         results[file.filename] = transcription
 
